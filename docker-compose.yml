@@ -1,0 +1,32 @@
+services:
+  timemachine:
+    image: timemachine:latest
+    pull_policy: never
+    container_name: timemachine
+    restart: unless-stopped
+    hostname: timemachine
+    networks:
+      lan:
+        ipv4_address: 192.168.1.250     # a free IP in your LAN, outside the router's DHCP range
+    environment:
+      TM_USER: timemachine
+      TM_PASSWORD: change-me
+      TM_SHARE_NAME: TimeMachine
+      TM_SIZE_LIMIT: 1T
+      TM_HOSTNAME: timemachine          # must differ from the NAS's own name
+      PUID: "1000"
+      PGID: "10"
+      ENABLE_AVAHI: "1"
+      TZ: Europe/Berlin
+    volumes:
+      - /volume1/timemachine:/backups   # adjust to your NAS path
+
+networks:
+  lan:
+    driver: macvlan
+    driver_opts:
+      parent: eth0                      # your NAS's network interface
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
